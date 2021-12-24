@@ -1,0 +1,1 @@
+celery -A run_worker.celery worker --loglevel=DEBUG
