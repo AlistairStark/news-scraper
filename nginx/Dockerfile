@@ -19,6 +19,6 @@ COPY ./default.conf /etc/nginx/conf.d/default.conf
 # COPY --from=builder /app/build .
 COPY ./build .
 # Give permission
-CMD ["chmod", "701", "user_home"]
+# RUN ["chmod", "701", "user_home"]
 # Containers run nginx with global directives and daemon off
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
