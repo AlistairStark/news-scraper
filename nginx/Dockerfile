@@ -1,11 +1,11 @@
-FROM node:14 AS builder
-# Set working directory
-WORKDIR /app
-# Copy all files from current directory to working dir in image
+# FROM node:14 AS builder
+# # Set working directory
+# WORKDIR /app
+# # Copy all files from current directory to working dir in image
 
-COPY . .
-# install node modules and build assets
-RUN yarn install && yarn build
+# COPY . .
+# # install node modules and build assets
+# RUN yarn install && yarn build
 
 # nginx state for serving content
 FROM nginx
@@ -16,7 +16,8 @@ RUN rm -rf ./*
 # copy nginx settings
 COPY ./default.conf /etc/nginx/conf.d/default.conf
 # Copy static assets from builder stage
-COPY --from=builder /app/build .
+# COPY --from=builder /app/build .
+COPY ./build .
 # Give permission
 CMD ["chmod", "701", "user_home"]
 # Containers run nginx with global directives and daemon off
