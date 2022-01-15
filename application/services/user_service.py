@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class UserService(object):
     def create_user(self, body: UserEmailPassword):
         user = models.User()
-        user.create_user(body.email, body.username, body.password)
+        user.create_user(body.email, body.password)
         db.session.add(user)
         db.session.commit()
 

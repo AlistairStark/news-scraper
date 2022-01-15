@@ -22,28 +22,28 @@ services:
     stdin_open: true
     tty: true
 
-  worker:
-    build: .
-    volumes:
-      - "$PWD:/app"
-    environment:
-      FLASK_DEBUG: 1
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DBS: "${POSTGRES_DBS}"
-      CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
-      CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
-    depends_on:
-      - api
-      - redis
-    command: ["/bin/bash"]
-    stdin_open: true
-    tty: true
+  # worker:
+  #   build: .
+  #   volumes:
+  #     - "$PWD:/app"
+  #   environment:
+  #     FLASK_DEBUG: 1
+  #     POSTGRES_USER: "${POSTGRES_USER}"
+  #     POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+  #     POSTGRES_DBS: "${POSTGRES_DBS}"
+  #     CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
+  #     CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
+  #   depends_on:
+  #     - api
+  #     - redis
+  #   command: ["/bin/bash"]
+  #   stdin_open: true
+  #   tty: true
 
-  redis:
-    image: redis:6-alpine
-    volumes:
-      - "redis_data:/data"
+  # redis:
+  #   image: redis:6-alpine
+  #   volumes:
+  #     - "redis_data:/data"
 
   postgres:
     image: "postgres"

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import urllib
 import pytz
 from bs4 import BeautifulSoup
@@ -8,9 +8,7 @@ import requests
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.elements import and_
 from sqlalchemy.sql.expression import or_
-from sqlalchemy.sql.functions import mode
 from application import models, db
-from flask import jsonify
 
 
 class ScraperService(object):
@@ -37,9 +35,11 @@ class ScraperService(object):
         previous_urls = set()
         for item in list_of_links:
             url = self._get_url(item, base_url)
-            if url in previous_urls:
+            if not url or url in previous_urls:
                 continue
-            if any(term in item.text.lower() for term in self.terms):
+            if len(self.terms) < 1 or any(
+                term in item.text.lower() for term in self.terms
+            ):
                 title = item.text.strip().split("\n")[0]
                 previous_urls.add(url)
                 yield dict(
@@ -65,7 +65,7 @@ class ScraperService(object):
         end: datetime,
         include_previous=False,
     ) -> List[models.Result]:
-        q = models.Result.query
+        q = models.Result.query.filter_by(search_id=self.search.id)
         if include_previous:
             q = q.filter(
                 or_(
@@ -86,6 +86,13 @@ class ScraperService(object):
             )
         return q.all()
 
+    def _get_today_start_end_time(self) -> Tuple[datetime, datetime]:
+        tz = pytz.timezone("America/Toronto")
+        now = pytz.utc.localize(datetime.utcnow()).astimezone(tz)
+        start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end = start + timedelta(days=1)
+        return start, end
+
     def scrape_sites(self, include_previous: bool) -> List[models.Result]:
         all_results = []
         for location in self.search.search_locations:
@@ -94,8 +101,45 @@ class ScraperService(object):
                     continue
                 all_results.append(results)
         self._upsert_results(all_results)
-        tz = pytz.timezone("America/Toronto")
-        now = pytz.utc.localize(datetime.utcnow()).astimezone(tz)
-        start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        end = start + timedelta(days=1)
+        start, end = self._get_today_start_end_time()
+        return self.get_results(start, end, include_previous)
+
+    def scrape_all(self, include_previous: bool) -> List[models.Result]:
+        self.search.search_locations
+        potential_links = []
+
+        for location in self.search.search_locations:
+            site = location.name
+            link = location.url
+            res = requests.get(link)
+            soup = BeautifulSoup(res.content, features="xml")
+            parsed_url = urllib.parse.urlparse(link)
+            base_url = f"{parsed_url[0]}://{parsed_url[1]}"
+            list_of_links = soup.findAll("item")
+            for item in list_of_links:
+                try:
+                    if "http" in item.link.text:
+                        potential_links.append(
+                            {
+                                "agency": site,
+                                "title": item.title.text.strip().split("\n")[0],
+                                "link": item.link.text,
+                                "search_id": self.search.id,
+                            }
+                        )
+                    else:
+                        relative_path = item.link.text
+                        complete_url = f"{base_url}{relative_path}"
+                        potential_links.append(
+                            {
+                                "agency": site,
+                                "title": item.title.text.strip().split("\n")[0],
+                                "link": complete_url,
+                                "search_id": self.search.id,
+                            }
+                        )
+                except:
+                    print("Error Found!")
+        self._upsert_results(potential_links)
+        start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)

@@ -18,12 +18,14 @@ from flask_jwt_extended import current_user
 class CreateSearchSchema(Schema):
     name = fields.String(required=True)
     description = fields.String(required=True)
+    is_rss = fields.Boolean(required=True)
 
 
 @dataclass
 class CreateSearch:
     name: str
     description: str
+    is_rss: bool
 
 
 class UpdateSearchSchema(CreateSearchSchema):

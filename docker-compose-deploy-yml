@@ -1,0 +1,46 @@
+version: "3.5"
+
+services:
+  api:
+    build:
+      context: .
+    container_name: api
+    ports:
+      - "5000:5000"
+    volumes:
+      - "$PWD:/app"
+    depends_on:
+      - postgres
+    environment:
+      FLASK_DEBUG: 0
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DBS: "${POSTGRES_DBS}"
+      CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
+      CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
+    command: ["bash", "run.sh"]
+
+  nginx:
+    depends_on:
+      - api
+    restart: always
+    build:
+      dockerfile: ../nginx/Dockerfile
+      context: ./ui
+    ports:
+      - "80:80"
+
+  postgres:
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DBS: "${POSTGRES_DBS}"
+
+volumes:
+  postgres_data:
+    driver: local

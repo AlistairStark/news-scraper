@@ -32,6 +32,7 @@ class SearchService(object):
         search = models.Search(
             name=body.name,
             description=body.description,
+            is_rss=body.is_rss,
             user_id=user_id,
         )
         db.session.add(search)
@@ -63,6 +64,7 @@ class SearchService(object):
             raise NotFound("Search not found")
         search.name = body.name
         search.description = body.description
+        search.is_rss = body.is_rss
         db.session.add(search)
         db.session.commit()
 

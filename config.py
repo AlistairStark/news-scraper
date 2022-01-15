@@ -12,6 +12,7 @@ class Config(object):
     SECRET_KEY = os.environ.get("SECRET_KEY", "1234")
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "2345")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    CREATE_SECRET = os.environ.get("CREATE_SECRET", "test")
 
 
 class DevelopmentConfig(Config):

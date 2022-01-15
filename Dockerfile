@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 WORKDIR /app
 
@@ -16,5 +16,3 @@ COPY requirements.txt requirements.txt
 EXPOSE 5000
 
 RUN pip install -r requirements.txt
-
-CMD [ "run.sh" ]

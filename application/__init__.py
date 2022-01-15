@@ -6,11 +6,18 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_sse import sse
 from application.worker import init_celery
+import logging
 
 db = SQLAlchemy()
 jwt = JWTManager()
 
 CONFIG = os.getenv("FLASK_CONFIG", "config.DevelopmentConfig")
+
+logging.basicConfig(
+    filename="record.log",
+    level=logging.INFO,
+    format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s",
+)
 
 
 def init_app():

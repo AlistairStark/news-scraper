@@ -35,5 +35,8 @@ class Scrape(Resource):
     )
     def get(self, params: GetScrapeData):
         search = SearchService().get_search(current_user.id, params.search_id)
-        results = ScraperService(search).scrape_sites(params.include_previous)
+        if search.is_rss:
+            results = ScraperService(search).scrape_all(params.include_previous)
+        else:
+            results = ScraperService(search).scrape_sites(params.include_previous)
         return jsonify({"links": [r.serialize() for r in results]})

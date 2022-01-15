@@ -47,6 +47,7 @@ class Search(CreatedAtUpdatedAtMixin, Base):
     name = Column(String(50), nullable=False)
     description = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    is_rss = Column(Boolean, nullable=False, server_default="false")
 
     user: RelationshipProperty["User"] = relationship("User", back_populates="searches")
 
@@ -69,6 +70,7 @@ class Search(CreatedAtUpdatedAtMixin, Base):
             "id": self.id,
             "name": self.name,
             "description": self.description,
+            "is_rss": self.is_rss,
             "search_terms": [t.serialize() for t in self.search_terms],
             "search_locations": [t.serialize() for t in self.search_locations],
         }
