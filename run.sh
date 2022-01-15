@@ -1,3 +1,4 @@
+cd application && alembic upgrade head && cd ..
 
 gunicorn \
     --reload \

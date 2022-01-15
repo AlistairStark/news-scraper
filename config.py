@@ -4,7 +4,7 @@ import os
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL", "postgresql://postgres:postgres@server-postgres-1/postgres"
+        "DATABASE_URL", "postgresql://postgres:postgres@postgres/postgres"
     )
     REDIS_URL = os.environ.get("CELERY_BROKER_URL")
     DEBUG = False
