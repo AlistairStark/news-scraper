@@ -14,10 +14,10 @@ WORKDIR /usr/share/nginx/html
 # Remove default nginx static assets
 RUN rm -rf ./*
 # copy nginx settings
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 # Copy static assets from builder stage
 # COPY --from=builder /app/build .
-COPY ../ui/build .
+COPY ./ui/build .
 # Give permission
 # RUN ["chmod", "701", "user_home"]
 # Containers run nginx with global directives and daemon off
