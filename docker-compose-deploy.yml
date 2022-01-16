@@ -36,6 +36,8 @@ services:
 
   certbot:
     image: certbot/certbot
+    build: 
+      context: ./ui
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
