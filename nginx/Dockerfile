@@ -14,7 +14,7 @@ WORKDIR /usr/share/nginx/html
 # Remove default nginx static assets
 RUN rm -rf ./*
 # copy nginx settings
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/conf/default.conf /etc/nginx/conf.d/default.conf
 # Copy static assets from builder stage
 # COPY --from=builder /app/build .
 COPY ./ui/build .
