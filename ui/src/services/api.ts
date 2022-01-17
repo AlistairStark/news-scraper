@@ -1,11 +1,19 @@
 import Axios from "axios";
 import { ApiRoutes, AppRoutes } from "../types";
+import { toast } from "react-toastify";
 
 const TOKEN = "token";
 
 export const axios = Axios.create({
   baseURL: "",
 });
+
+function getMessage(error: any) {
+  if (error?.response?.data?.message) {
+    return error?.response?.data?.message;
+  }
+  return "Something went wrong...";
+}
 
 axios.interceptors.response.use(
   (response) => {
@@ -15,6 +23,11 @@ axios.interceptors.response.use(
     if (401 === error?.response?.status) {
       localStorage.removeItem(TOKEN);
       window.location.href = AppRoutes.Login;
+    } else if (400 === error?.response?.status) {
+      console.log(error.response.data);
+      toast.error(getMessage(error));
+    } else {
+      toast.error(getMessage(error));
     }
   }
 );

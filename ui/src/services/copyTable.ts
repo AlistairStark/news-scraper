@@ -107,19 +107,11 @@ export function makeTable(rows: ScrapeResults[]): string {
   `;
 }
 
-export const copyTable = (rows: ScrapeResults[]) => {
+export const copyTable = async (rows: ScrapeResults[]) => {
   const text = makeTable(rows);
   const type = "text/html";
   const blob = new Blob([text.trim()], { type });
   const data = [new ClipboardItem({ "text/html": blob as any })];
 
-  navigator.clipboard.write(data).then(
-    () => {
-      alert("Copied to clipboard!");
-    },
-    (err) => {
-      alert("Could not copy text. Try another browser.");
-      console.error("Async: Could not copy text: ", err);
-    }
-  );
+  return navigator.clipboard.write(data);
 };

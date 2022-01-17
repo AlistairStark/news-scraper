@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.elements import and_
 from sqlalchemy.sql.expression import or_
 from application import models, db
+from werkzeug.exceptions import NotFound, BadRequest
 
 
 class ScraperService(object):
@@ -23,8 +24,26 @@ class ScraperService(object):
             complete_url = f"{base_url}{relative_path}"
         return complete_url
 
+    def _get_url(self, url):
+        try:
+            return requests.get(url)
+        except requests.exceptions.MissingSchema:
+            raise BadRequest(
+                f"The url {url} is missing a schema. \nDid you forget https:// ?"
+            )
+        except requests.exceptions.HTTPError:
+            raise NotFound(
+                f"The url {url} has an error. \nPlease confirm the link exists!"
+            )
+        except requests.exceptions.ConnectionError:
+            raise NotFound(f"Couldn't connect to {url}. \nDoes it exist?")
+        except Exception:
+            raise BadRequest(
+                f"Couldn't read {url}. \nIf the problem persists, remove this url from the search."
+            )
+
     def _scrape(self, site: str, link: str):
-        res = requests.get(link)
+        res = self._get_url(link)
         parsed_url = urllib.parse.urlparse(link)
         base_url = f"{parsed_url[0]}://{parsed_url[1]}"
         if res.status_code != 200:
@@ -111,7 +130,7 @@ class ScraperService(object):
         for location in self.search.search_locations:
             site = location.name
             link = location.url
-            res = requests.get(link)
+            res = res = self._get_url(link)
             soup = BeautifulSoup(res.content, features="xml")
             parsed_url = urllib.parse.urlparse(link)
             base_url = f"{parsed_url[0]}://{parsed_url[1]}"

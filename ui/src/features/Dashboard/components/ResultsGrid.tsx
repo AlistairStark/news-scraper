@@ -24,6 +24,7 @@ import { ApiRoutes } from "../../../types";
 import Checkbox from "@mui/material/Checkbox";
 import FileSaver from "file-saver";
 import { copyTable, makeTable } from "../../../services/copyTable";
+import { toast } from "react-toastify";
 
 export type ScrapeResults = {
   id: number;
@@ -56,11 +57,13 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
         ApiRoutes.Scrape,
         { params }
       );
-      if (res.data?.links) {
+      console.log("RES: ", res);
+      if (res?.data?.links) {
         setRows(res.data.links);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      // console.error(err);
+      console.log("err: ", err.response);
     }
     setLoading(false);
   };
@@ -131,7 +134,17 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
                   HTML Preview
                 </Button>
                 <Button
-                  onClick={() => copyTable(filterExcludedRows())}
+                  onClick={async () => {
+                    try {
+                      await copyTable(filterExcludedRows());
+                      toast.success("Copied to clipboard!");
+                    } catch (err) {
+                      console.error(err);
+                      toast.error(
+                        "Error copying to clipboard. Try another browser."
+                      );
+                    }
+                  }}
                   variant="contained"
                   sx={{ marginRight: "5px" }}
                 >

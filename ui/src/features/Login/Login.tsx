@@ -47,16 +47,11 @@ export const Login: React.FC<Props> = ({ isAuthenticated }) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <h1>Reporter Login</h1>
         <FormField>
-          <FormLabel htmlFor="email">Email</FormLabel> <br />
+          <FormLabel htmlFor="email">Username</FormLabel> <br />
           <Input
             id="email"
             {...register("email", {
-              required: "email is required",
-              pattern: {
-                value:
-                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                message: "Please enter a valid email",
-              },
+              required: "username is required",
             })}
           />
           <FormError>{errors.email?.message}</FormError>

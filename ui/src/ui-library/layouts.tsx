@@ -6,7 +6,7 @@ import { styles } from "./styles";
 
 const SingleWindowWrap = styled.div`
   height: 100vh;
-  width: 100vw;
+  min-width: 100vw;
   display: flex;
   overflow: scroll;
   background-color: ${styles.colors.lightGrey};
