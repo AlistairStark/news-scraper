@@ -17,14 +17,14 @@ class ScraperService(object):
         self.search = search
         self.terms = [t.term.lower() for t in search.search_terms]
 
-    def _get_site(self, item: Tag, base_url: str) -> Optional[str]:
+    def _get_url(self, item: Tag, base_url: str) -> Optional[str]:
         complete_url = item.get("href")
         if item.get("href") and not "http" in item.get("href"):
             relative_path = item["href"]
             complete_url = f"{base_url}{relative_path}"
         return complete_url
 
-    def _get_url(self, url):
+    def _get_site(self, url):
         try:
             return requests.get(url)
         except requests.exceptions.MissingSchema:
