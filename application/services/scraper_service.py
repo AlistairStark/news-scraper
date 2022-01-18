@@ -128,23 +128,31 @@ class ScraperService(object):
 
     def scrape_all(self, include_previous: bool) -> List[models.Result]:
         self.search.search_locations
-        potential_links = []
-
         for location in self.search.search_locations:
+            potential_links = []
             site = location.name
             link = location.url
-            res = res = self._get_site(link)
+            res = self._get_site(link)
             soup = BeautifulSoup(res.content, features="xml")
             parsed_url = urllib.parse.urlparse(link)
             base_url = f"{parsed_url[0]}://{parsed_url[1]}"
             list_of_links = soup.findAll("item")
+            title_set = set()
+            link_set = set()
             for item in list_of_links:
                 try:
                     title = item.title.text.strip().split("\n")[0]
+                    if title in title_set:
+                        logger.info(f"Title {title} already exists!")
+                        continue
+                    title_set.add(title)
                     if not title or not site:
                         logger.warn(f"error title: {title}, site: {site}")
                         continue
                     if "http" in item.link.text:
+                        if item.link.text in link_set:
+                            continue
+                        link_set.add(item.link.text)
                         potential_links.append(
                             {
                                 "agency": site,
@@ -156,6 +164,9 @@ class ScraperService(object):
                     else:
                         relative_path = item.link.text
                         complete_url = f"{base_url}{relative_path}"
+                        if complete_url in link_set:
+                            continue
+                        link_set.add(complete_url)
                         potential_links.append(
                             {
                                 "agency": site,
@@ -167,6 +178,6 @@ class ScraperService(object):
                 except Exception as e:
                     logger.warn(f"Error Found: {e}")
                     continue
-        self._upsert_results(potential_links)
+            self._upsert_results(potential_links)
         start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)
