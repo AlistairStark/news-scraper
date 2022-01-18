@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import logging
 from typing import List, Optional, Tuple
 import urllib
 import pytz
@@ -10,6 +11,8 @@ from sqlalchemy.sql.elements import and_
 from sqlalchemy.sql.expression import or_
 from application import models, db
 from werkzeug.exceptions import NotFound, BadRequest
+
+logger = logging.getLogger(__name__)
 
 
 class ScraperService(object):
@@ -137,6 +140,10 @@ class ScraperService(object):
             list_of_links = soup.findAll("item")
             for item in list_of_links:
                 try:
+                    title = item.title.text.strip().split("\n")[0]
+                    if not title or not site:
+                        logger.warn(f"error title: {title}, site: {site}")
+                        continue
                     if "http" in item.link.text:
                         potential_links.append(
                             {
@@ -157,8 +164,9 @@ class ScraperService(object):
                                 "search_id": self.search.id,
                             }
                         )
-                except:
-                    print("Error Found!")
+                except Exception as e:
+                    logger.warn(f"Error Found: {e}")
+                    continue
         self._upsert_results(potential_links)
         start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)
