@@ -17,7 +17,7 @@ class ScraperService(object):
         self.search = search
         self.terms = [t.term.lower() for t in search.search_terms]
 
-    def _get_url(self, item: Tag, base_url: str) -> Optional[str]:
+    def _get_site(self, item: Tag, base_url: str) -> Optional[str]:
         complete_url = item.get("href")
         if item.get("href") and not "http" in item.get("href"):
             relative_path = item["href"]
@@ -43,7 +43,7 @@ class ScraperService(object):
             )
 
     def _scrape(self, site: str, link: str):
-        res = self._get_url(link)
+        res = self._get_site(link)
         parsed_url = urllib.parse.urlparse(link)
         base_url = f"{parsed_url[0]}://{parsed_url[1]}"
         if res.status_code != 200:
@@ -130,7 +130,7 @@ class ScraperService(object):
         for location in self.search.search_locations:
             site = location.name
             link = location.url
-            res = res = self._get_url(link)
+            res = res = self._get_site(link)
             soup = BeautifulSoup(res.content, features="xml")
             parsed_url = urllib.parse.urlparse(link)
             base_url = f"{parsed_url[0]}://{parsed_url[1]}"
