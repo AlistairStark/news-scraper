@@ -11,8 +11,9 @@ RUN apt-get install -y \
   python3-dev \
   gcc
 
-COPY requirements.txt requirements.txt
+COPY poetry.lock poetry.lock
+COPY pyproject.toml pyproject.toml
 
-EXPOSE 5000
-
-RUN pip install -r requirements.txt
+RUN pip install --ignore-installed poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-interaction

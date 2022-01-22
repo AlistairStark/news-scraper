@@ -2,13 +2,15 @@ from dataclasses import dataclass
 from werkzeug.exceptions import Forbidden
 from flask import jsonify
 from flask_jwt_extended import jwt_required
-from flask_restful import Resource
 from marshmallow import fields
 from marshmallow.schema import Schema
+from flask import Blueprint
 
-from application.decorators.validation import validate_payload
 from application.services.user_service import UserService
+from application.services.validate_service import deserialize_body
 from config import Config
+
+bp = Blueprint("user", __name__)
 
 
 class UserSchema(Schema):
@@ -31,24 +33,29 @@ class CreateUserEmailPassword(UserEmailPassword):
     create_secret: str
 
 
-class CreateUser(Resource):
-    @validate_payload(CreateUserSchema, CreateUserEmailPassword)
-    def post(self, body: UserEmailPassword):
-        if body.create_secret != Config().CREATE_SECRET:
-            raise Forbidden("Get outta here!")
-        return UserService().create_user(body)
+@bp.post("/user/create")
+def post_user_create():
+    body: CreateUserEmailPassword = deserialize_body(
+        CreateUserSchema, CreateUserEmailPassword
+    )
+    if body.create_secret != Config().CREATE_SECRET:
+        raise Forbidden("Get outta here!")
+    UserService().create_user(body)
+    return "", 201
 
-    @jwt_required()
-    def get(self):
-        return "SUCCESS"
+
+@bp.get("/user/create")
+@jwt_required()
+def get_user_create():
+    return "SUCCESS", 200
 
 
 class LoginUserSchema(UserSchema):
     pass
 
 
-class LoginUser(Resource):
-    @validate_payload(LoginUserSchema, UserEmailPassword)
-    def post(self, body: UserEmailPassword):
-        token = UserService().login(body)
-        return jsonify(token=token)
+@bp.post("/user/login")
+def post_user_login():
+    body: UserEmailPassword = deserialize_body(LoginUserSchema, UserEmailPassword)
+    token = UserService().login(body)
+    return jsonify(token=token)

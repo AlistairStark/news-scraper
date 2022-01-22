@@ -1,12 +1,14 @@
 from flask_jwt_extended.view_decorators import jwt_required
-from flask_restful import Resource
+from flask import Blueprint
 from dataclasses import dataclass
 from marshmallow import fields
 
 from marshmallow.schema import Schema
 
-from application.decorators.validation import validate_payload
 from application.services.download_service import DownloadService
+from application.services.validate_service import deserialize_body
+
+bp = Blueprint("download", __name__)
 
 
 class DownloadCsvBody(Schema):
@@ -20,8 +22,8 @@ class DownloadCsvData:
     search_id: int
 
 
-class DownloadCsv(Resource):
-    @jwt_required()
-    @validate_payload(DownloadCsvBody, DownloadCsvData)
-    def post(self, body: DownloadCsvData):
-        return DownloadService().download_csv(body.ids, body.search_id)
+@jwt_required()
+@bp.post("/download-csv")
+def download_csv():
+    body: DownloadCsvData = deserialize_body(DownloadCsvBody, DownloadCsvData)
+    return DownloadService().download_csv(body.ids, body.search_id)
