@@ -50,26 +50,29 @@ class ScraperService(object):
         parsed_url = urllib.parse.urlparse(link)
         base_url = f"{parsed_url[0]}://{parsed_url[1]}"
         if res.status_code != 200:
-            print(f"Error {res.status_code}: {link}")
+            logger.error(f"Error {res.status_code}: {link}")
             yield None
         soup = BeautifulSoup(res.text, "html.parser")
         list_of_links = soup.select("a")
         previous_urls = set()
         for item in list_of_links:
-            url = self._get_url(item, base_url)
-            if not url or url in previous_urls:
-                continue
-            if len(self.terms) < 1 or any(
-                term in item.text.lower() for term in self.terms
-            ):
-                title = item.text.strip().split("\n")[0]
-                previous_urls.add(url)
-                yield dict(
-                    agency=site,
-                    title=title,
-                    link=url,
-                    search_id=self.search.id,
-                )
+            try:
+                url = self._get_url(item, base_url)
+                if not url or url in previous_urls:
+                    continue
+                if len(self.terms) < 1 or any(
+                    term in item.text.lower() for term in self.terms
+                ):
+                    title = item.text.strip().split("\n")[0]
+                    previous_urls.add(url)
+                    yield dict(
+                        agency=site,
+                        title=title,
+                        link=url,
+                        search_id=self.search.id,
+                    ), link
+            except Exception as e:
+                logger.error(f"Error while scraping: {e}")
 
     def _upsert_results(self, results: List[dict]):
         insert_results = insert(models.Result).values(results)
@@ -117,10 +120,15 @@ class ScraperService(object):
 
     def scrape_sites(self, include_previous: bool) -> List[models.Result]:
         all_results = []
+        links_set = set()
         for location in self.search.search_locations:
-            for results in self._scrape(location.name, location.url):
+            for results, link in self._scrape(location.name, location.url):
                 if not results:
                     continue
+                if link in links_set:
+                    logger.info(f"Link {link} already exists in this run")
+                    continue
+                links_set.add(link)
                 all_results.append(results)
         self._upsert_results(all_results)
         start, end = self._get_today_start_end_time()
