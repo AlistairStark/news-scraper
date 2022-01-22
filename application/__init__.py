@@ -14,7 +14,7 @@ jwt = JWTManager()
 CONFIG = os.getenv("FLASK_CONFIG", "config.DevelopmentConfig")
 
 logging.basicConfig(
-    filename="record.log",
+    # filename="record.log",
     level=logging.INFO,
     format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s",
 )
