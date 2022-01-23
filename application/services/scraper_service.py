@@ -30,7 +30,7 @@ class ScraperService(object):
             complete_url = f"{base_url}{relative_path}"
         return complete_url
 
-    def _chunks(self, main_list, chunk_size=30):
+    def _chunks(self, main_list, chunk_size=10):
         for i in range(0, len(main_list), chunk_size):
             yield main_list[i : i + chunk_size]
 
