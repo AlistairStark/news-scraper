@@ -1,5 +1,8 @@
+import asyncio
 from datetime import datetime, timedelta
 import logging
+from unittest import result
+import httpx
 from typing import List, Optional, Tuple
 import urllib
 import pytz
@@ -11,6 +14,8 @@ from sqlalchemy.sql.elements import and_
 from sqlalchemy.sql.expression import or_
 from application import models, db
 from werkzeug.exceptions import NotFound, BadRequest
+
+from application.models.schema import SearchLocation
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +50,20 @@ class ScraperService(object):
                 f"Couldn't read {url}. \nIf the problem persists, remove this url from the search."
             )
 
-    def _scrape(self, site: str, link: str):
-        res = self._get_site(link)
+    def _chunks(self, main_list, chunk_size=2):
+        for i in range(0, len(main_list), chunk_size):
+            yield main_list[i : i + chunk_size]
+
+    async def _get_page(self, session, location: SearchLocation):
+        try:
+            res = await session.get(location.url)
+            return [scrape for scrape in self._scrape(location.name, location.url, res)]
+        except Exception as e:
+            logger.error(f"Error scraping page: {e}")
+
+    def _scrape(self, site: str, link: str, res):
         parsed_url = urllib.parse.urlparse(link)
         base_url = f"{parsed_url[0]}://{parsed_url[1]}"
-        if res.status_code != 200:
-            logger.error(f"Error {res.status_code}: {link}")
-            yield None
         soup = BeautifulSoup(res.text, "html.parser")
         list_of_links = soup.select("a")
         previous_urls = set()
@@ -70,7 +82,7 @@ class ScraperService(object):
                         title=title,
                         link=url,
                         search_id=self.search.id,
-                    ), link
+                    )
             except Exception as e:
                 logger.error(f"Error while scraping: {e}")
 
@@ -118,19 +130,20 @@ class ScraperService(object):
         end = start + timedelta(days=1)
         return start, end
 
-    def scrape_sites(self, include_previous: bool) -> List[models.Result]:
-        all_results = []
-        links_set = set()
-        for location in self.search.search_locations:
-            for results, link in self._scrape(location.name, location.url):
-                if not results:
-                    continue
-                if link in links_set:
-                    logger.info(f"Link {link} already exists in this run")
-                    continue
-                links_set.add(link)
-                all_results.append(results)
-        self._upsert_results(all_results)
+    async def scrape_sites(self, include_previous: bool) -> List[models.Result]:
+        for locations in self._chunks(self.search.search_locations):
+            links_set = set()
+            all_results = []
+            async with httpx.AsyncClient() as session:
+                tasks = [self._get_page(session, l) for l in locations]
+                responses = await asyncio.gather(*tasks, return_exceptions=False)
+                for r in responses:
+                    for data in r:
+                        if data["link"] in links_set:
+                            continue
+                        links_set.add(data["link"])
+                        all_results.append(data)
+                self._upsert_results(all_results)
         start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)
 
@@ -186,6 +199,7 @@ class ScraperService(object):
                 except Exception as e:
                     logger.warn(f"Error Found: {e}")
                     continue
-            self._upsert_results(potential_links)
+            if len(potential_links) > 0:
+                self._upsert_results(potential_links)
         start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)

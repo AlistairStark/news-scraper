@@ -34,7 +34,8 @@ async def get_scrape_data():
     params: GetScrapeData = deserialize_params(GetScrapeParam, GetScrapeData)
     search = SearchService().get_search(current_user.id, params.search_id)
     if search.is_rss:
+        # TODO scrape async
         results = ScraperService(search).scrape_all(params.include_previous)
     else:
-        results = ScraperService(search).scrape_sites(params.include_previous)
+        results = await ScraperService(search).scrape_sites(params.include_previous)
     return jsonify({"links": [r.serialize() for r in results]})
