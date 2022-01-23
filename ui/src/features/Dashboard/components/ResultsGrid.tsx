@@ -5,11 +5,11 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Card from "@mui/material/Card";
 import {
   CircularProgress,
   FormControlLabel,
   Switch,
-  // TextField,
   Tooltip,
 } from "@mui/material";
 import {
@@ -18,6 +18,8 @@ import {
   FullScreenDialog,
   PaddingWrap,
   TextSmall,
+  HeaderSmall,
+  ButtonWrap,
 } from "../../../ui-library";
 import { axios } from "../../../services";
 import { ApiRoutes } from "../../../types";
@@ -37,9 +39,10 @@ export type ScrapeResults = {
 
 type Props = {
   searchId: number;
+  width: number;
 };
 
-export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
+export const ResultsGrid: React.FC<Props> = ({ searchId, width }) => {
   const [rows, setRows] = useState<ScrapeResults[]>([]);
   const [loading, setLoading] = useState(false);
   const [showHTML, setHTML] = useState<string>("");
@@ -57,12 +60,10 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
         ApiRoutes.Scrape,
         { params }
       );
-      console.log("RES: ", res);
       if (res?.data?.links) {
         setRows(res.data.links);
       }
     } catch (err: any) {
-      // console.error(err);
       console.log("err: ", err.response);
     }
     setLoading(false);
@@ -89,11 +90,13 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
   const filterExcludedRows = (): ScrapeResults[] =>
     rows.filter((r) => !excluded.has(r.link));
 
+  const marginBottom = width < 900 ? "5px" : 0;
+
   return (
-    <Paper>
+    <Paper sx={{ width: "100%" }}>
       <PaddingWrap>
         <FlexWrap justifyContent="space-between">
-          <div>
+          <ButtonWrap>
             <Button
               onClick={doSearch}
               variant="contained"
@@ -118,8 +121,8 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
                 label="Include Previous"
               />
             </Tooltip>
-          </div>
-          <div>
+          </ButtonWrap>
+          <ButtonWrap>
             {rows.length > 0 && (
               <>
                 <Button
@@ -129,7 +132,7 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
                     setHTML(html);
                   }}
                   variant="contained"
-                  sx={{ marginRight: "5px" }}
+                  sx={{ marginRight: "5px", marginBottom }}
                 >
                   HTML Preview
                 </Button>
@@ -146,20 +149,20 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
                     }
                   }}
                   variant="contained"
-                  sx={{ marginRight: "5px" }}
+                  sx={{ marginRight: "5px", marginBottom }}
                 >
                   Copy To Clipboard
                 </Button>
                 <Button
                   onClick={downloadResults}
                   variant="contained"
-                  sx={{ marginRight: "5px" }}
+                  sx={{ marginRight: "5px", marginBottom }}
                 >
                   Download
                 </Button>
               </>
             )}
-          </div>
+          </ButtonWrap>
         </FlexWrap>
         <TextSmall>{rows.length} results</TextSmall>
       </PaddingWrap>
@@ -169,50 +172,77 @@ export const ResultsGrid: React.FC<Props> = ({ searchId }) => {
           dangerouslySetInnerHTML={{ __html: showHTML }}
         />
       </FullScreenDialog>
-      <Table sx={{ minWidth: 650 }} size="small" aria-label="Results">
-        <TableHead>
-          <TableRow>
-            <TableCell>Agency</TableCell>
-            <TableCell>Title</TableCell>
-            <TableCell>Link</TableCell>
-            <TableCell align="right">Exclude</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+      {width <= 900 ? (
+        <>
           {rows.map((row) => {
             const styles = {
+              padding: "5px",
+              margin: "5px 0",
               opacity: 1,
-              height: "100",
             };
             if (excluded.has(row.link)) {
               styles["opacity"] = 0.25;
-              styles["height"] = "5px";
             }
             return (
-              <TableRow
-                key={row.title}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  ...styles,
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.agency}
-                </TableCell>
-                <TableCell>{row.title}</TableCell>
-                <TableCell>
+              <Card sx={styles} key={row.id}>
+                <HeaderSmall>{row.agency}</HeaderSmall>
+                <TextSmall>{row.title}</TextSmall>
+                <TextSmall>
                   <a href={row.link} rel="noreferrer" target="_blank">
                     {row.link}
                   </a>
-                </TableCell>
-                <TableCell align="right">
-                  <Checkbox onChange={() => handleExcludedCheck(row.link)} />
-                </TableCell>
-              </TableRow>
+                </TextSmall>
+                <Checkbox onChange={() => handleExcludedCheck(row.link)} />
+              </Card>
             );
           })}
-        </TableBody>
-      </Table>
+        </>
+      ) : (
+        <Table sx={{ minWidth: 650 }} size="small" aria-label="Results">
+          <TableHead>
+            <TableRow>
+              <TableCell>Agency</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Link</TableCell>
+              <TableCell align="right">Exclude</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => {
+              const styles = {
+                opacity: 1,
+                height: "100",
+              };
+              if (excluded.has(row.link)) {
+                styles["opacity"] = 0.25;
+                styles["height"] = "5px";
+              }
+              return (
+                <TableRow
+                  key={row.title}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    ...styles,
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.agency}
+                  </TableCell>
+                  <TableCell>{row.title}</TableCell>
+                  <TableCell>
+                    <a href={row.link} rel="noreferrer" target="_blank">
+                      {row.link}
+                    </a>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Checkbox onChange={() => handleExcludedCheck(row.link)} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      )}
     </Paper>
   );
 };

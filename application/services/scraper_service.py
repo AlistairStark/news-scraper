@@ -42,14 +42,12 @@ class ScraperService(object):
         return start, end
 
     def _validate_result(self, result: dict) -> bool:
-        if (
+        return (
             result.get("agency")
             and result.get("title")
             and result.get("link")
             and result.get("search_id")
-        ):
-            return True
-        return False
+        )
 
     async def _get_page(self, session: httpx.AsyncClient, location: SearchLocation):
         try:

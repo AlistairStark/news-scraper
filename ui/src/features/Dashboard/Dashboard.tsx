@@ -7,12 +7,12 @@ import { TopBar } from "../TopBar";
 import { AddEditSearch } from "../AddEditSearch";
 import { DashboardContent } from "./DashboardContent";
 import { DashboardMenu } from "./DashboardMenu";
-import { useApi } from "../../hooks";
+import { useApi, useWindowWidth } from "../../hooks";
 
 export const Dashboard: React.FC = () => {
   const [selectedId, setSelectedId] = useState<number | undefined>();
   const [addSearch, setAddSearch] = useState<AddOrEdit | undefined>();
-
+  const width = useWindowWidth();
   const {
     data: menuData,
     loading,
@@ -57,6 +57,7 @@ export const Dashboard: React.FC = () => {
       {selectedId && (
         <DashboardContent
           id={selectedId}
+          width={width}
           refetchMenu={refetchMenu}
           onDelete={onDelete}
         />

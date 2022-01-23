@@ -1,51 +1,21 @@
 import React from "react";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import { SiAircanada } from "react-icons/si";
 import styled from "styled-components";
 import { styles } from "./styles";
+import { Sidebar } from "./sidebar";
+import { useWindowWidth } from "../hooks";
 
 const SingleWindowWrap = styled.div`
   height: 100vh;
-  min-width: 100vw;
   display: flex;
   overflow: scroll;
   background-color: ${styles.colors.lightGrey};
 `;
 
-const Bar = styled.div`
-  padding: 20px 10px;
-  height: 100%;
-  min-height: 100vh;
-  width: 10vw;
-  min-width: 180px;
-  max-width: 250px;
-  background-color: ${styles.colors.darkBlue};
-`;
-
-const ContentWrap = styled.div`
-  width: 86vw;
+const ContentWrap = styled.div<{ width: string }>`
   overflow-y: scroll;
+  width: ${({ width }) => width};
 `;
-
-const Title = styled.div`
-  color: ${styles.colors.white};
-  text-transform: uppercase;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-bottom: 20px;
-`;
-
-export const Sidebar: React.FC = ({ children }) => (
-  <Bar>
-    <Title>
-      <span>Daily Ops</span>
-      <SiAircanada size="2em" color={styles.colors.canadaRed} />
-    </Title>
-    <div>{children}</div>
-  </Bar>
-);
 
 const TopBar = styled.div`
   width: 100%;
@@ -60,15 +30,19 @@ export const DashboardSidebarWrap: React.FC<Props> = ({
   menu,
   topbar,
   children,
-}) => (
-  <SingleWindowWrap>
-    <Sidebar>{menu}</Sidebar>
-    <ContentWrap>
-      <TopBar>{topbar}</TopBar>
-      {children}
-    </ContentWrap>
-  </SingleWindowWrap>
-);
+}) => {
+  const width = useWindowWidth();
+  const SIDEBAR = width > 900 ? 192 : 0;
+  return (
+    <SingleWindowWrap>
+      <Sidebar>{menu}</Sidebar>
+      <ContentWrap width={`${width - SIDEBAR}px`}>
+        <TopBar>{topbar}</TopBar>
+        {children}
+      </ContentWrap>
+    </SingleWindowWrap>
+  );
+};
 
 export const MenuSeparator = styled.div`
   position: relative;
@@ -103,12 +77,14 @@ export const LoginPageWrap = styled.div`
 
 export const LoginInner = styled.div`
   background-color: ${styles.colors.lightGrey};
-  width: 400px;
-  min-width: 400px;
   margin: 0 auto;
   border-radius: 3px;
   box-shadow: 0 0 8px ${styles.colors.black};
   padding: 10px 0;
+  @media (min-width: 600px) {
+    width: 400px;
+    min-width: 400px;
+  }
 `;
 
 export const LoginWrap: React.FC = ({ children }) => (
@@ -124,9 +100,11 @@ export const PaddingWrap = styled.div`
 export const FlexWrap = styled.div<{
   justifyContent: "left" | "center" | "space-around" | "space-between";
 }>`
-  display: flex;
-  justify-content: ${(p) => p.justifyContent};
-  margin-left: 60px;
+  @media (min-width: 600px) {
+    display: flex;
+    justify-content: ${(p) => p.justifyContent};
+    margin-left: 60px;
+  }
 `;
 
 export const ScrollableView = styled.div`
@@ -137,4 +115,8 @@ export const ScrollableView = styled.div`
 
 export const MarginBottom = styled.div`
   margin-bottom: 5px;
+`;
+
+export const ButtonWrap = styled.div`
+  width: 100%;
 `;

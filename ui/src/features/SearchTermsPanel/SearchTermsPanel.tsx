@@ -12,9 +12,14 @@ import { axios } from "../../services";
 type Props = {
   terms: SearchTerms[];
   searchId: number;
+  width: number;
 };
 
-export const SearchTermsPanel: React.FC<Props> = ({ terms, searchId }) => {
+export const SearchTermsPanel: React.FC<Props> = ({
+  terms,
+  searchId,
+  width,
+}) => {
   const [displayTerms, setDisplayTerms] = useState<SearchTerms[]>(terms);
   const [curId, setCurId] = useState(searchId);
   const [pendingDeleteTerms, setPendingDeleteTerms] = useState<{
@@ -74,11 +79,19 @@ export const SearchTermsPanel: React.FC<Props> = ({ terms, searchId }) => {
       }}
     >
       <HeaderSmall style={{ textAlign: "center" }}>Search Terms</HeaderSmall>
-      <Grid container spacing={2}>
-        <Grid item xs={3} sx={{ justifyContent: "left" }}>
+      <Grid
+        container
+        spacing={2}
+        sx={{ justifyContent: width > 900 ? "left" : "center" }}
+      >
+        <Grid
+          item
+          sm={3}
+          sx={{ justifyContent: width > 900 ? "left" : "center" }}
+        >
           <AddTermForm onSubmit={handleAddTerm} />
         </Grid>
-        <Grid item xs={9}>
+        <Grid item sm={9}>
           <MarginBottom>
             {displayTerms.map((term) => (
               <Chip

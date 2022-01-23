@@ -12,9 +12,10 @@ import { AddUrlForm, ChipText, NewUrlForm } from "./components";
 type Props = {
   urls: SearchLocations[];
   searchId: number;
+  width: number;
 };
 
-export const SearchUrlPanel: React.FC<Props> = ({ urls, searchId }) => {
+export const SearchUrlPanel: React.FC<Props> = ({ urls, searchId, width }) => {
   const [displayUrls, setDisplayUrls] = useState<SearchLocations[]>(urls);
   const [curId, setCurId] = useState(searchId);
   const [pendingDeleteUrls, setPendingDeleteUrls] = useState<{
@@ -68,6 +69,14 @@ export const SearchUrlPanel: React.FC<Props> = ({ urls, searchId }) => {
     }
   };
 
+  const sx =
+    width > 900
+      ? {}
+      : {
+          margin: "10px 0",
+          overflow: "scroll",
+        };
+
   return (
     <Paper
       sx={{
@@ -76,11 +85,11 @@ export const SearchUrlPanel: React.FC<Props> = ({ urls, searchId }) => {
       }}
     >
       <HeaderSmall style={{ textAlign: "center" }}>Search Urls</HeaderSmall>
-      <Grid container spacing={2}>
-        <Grid item xs={4} sx={{ justifyContent: "left" }}>
+      <Grid container spacing={0}>
+        <Grid item sm={4} sx={{ justifyContent: "left" }}>
           <AddUrlForm onSubmit={handleAddTerm} />
         </Grid>
-        <Grid item xs={8}>
+        <Grid item sm={8} sx={sx}>
           <ScrollableView>
             {displayUrls.map((url) => (
               <Chip

@@ -13,12 +13,14 @@ import { SearchUrlPanel } from "..";
 
 type Props = {
   id: number | undefined;
+  width: number;
   refetchMenu: () => void;
   onDelete: () => void;
 };
 
 export const DashboardContent: React.FC<Props> = ({
   id,
+  width,
   refetchMenu,
   onDelete,
 }) => {
@@ -84,18 +86,23 @@ export const DashboardContent: React.FC<Props> = ({
           />
           <Grid container spacing={cols === 12 ? 0 : 2}>
             <Grid item xs={cols}>
-              <SearchUrlPanel searchId={data.id} urls={data.search_locations} />
+              <SearchUrlPanel
+                width={width}
+                searchId={data.id}
+                urls={data.search_locations}
+              />
             </Grid>
             {!data.is_rss && (
               <Grid item xs={cols}>
                 <SearchTermsPanel
+                  width={width}
                   searchId={data.id}
                   terms={data.search_terms}
                 />
               </Grid>
             )}
           </Grid>
-          <ResultsGrid searchId={data.id} />
+          <ResultsGrid searchId={data.id} width={width} />
         </PaddingWrap>
       )}
     </>

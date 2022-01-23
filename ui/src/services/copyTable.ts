@@ -101,7 +101,7 @@ export function makeTable(rows: ScrapeResults[]): string {
     >
       <tbody>
         ${headings()}
-        ${rows.map(generateRow)}
+        ${rows.map(generateRow).join("")}
       </tbody>
     </table>  
   `;
@@ -109,6 +109,7 @@ export function makeTable(rows: ScrapeResults[]): string {
 
 export const copyTable = async (rows: ScrapeResults[]) => {
   const text = makeTable(rows);
+  console.log(text);
   const type = "text/html";
   const blob = new Blob([text.trim()], { type });
   const data = [new ClipboardItem({ "text/html": blob as any })];

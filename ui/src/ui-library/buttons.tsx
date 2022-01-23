@@ -5,6 +5,11 @@ import { styles } from "./styles";
 
 export const Button = MatButton;
 
+export const TransparentButton = styled.button`
+  background-color: transparent;
+  border: none;
+`;
+
 const CloseButtonWrap = styled.button`
   background-color: transparent;
   border: none;
