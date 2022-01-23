@@ -1,6 +1,6 @@
 from flask import request
-from werkzeug.exceptions import BadRequest
 from marshmallow import ValidationError
+from werkzeug.exceptions import BadRequest
 
 
 def deserialize(data_to_validate, validation_class, dataclass):

@@ -8,12 +8,10 @@ from werkzeug.exceptions import NotFound
 from application import db, models
 
 if TYPE_CHECKING:
-    from application.api.v1.search_controller import (
-        CreateSearch,
-        CreateSearchTerms,
-        CreateSearchLocations,
-        UpdateSearch,
-    )
+    from application.api.v1.search_controller import (CreateSearch,
+                                                      CreateSearchLocations,
+                                                      CreateSearchTerms,
+                                                      UpdateSearch)
 
 
 class SearchService(object):

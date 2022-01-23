@@ -2,19 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List, TypedDict
-from flask.globals import request
-from flask import Blueprint, jsonify
 
-from flask_jwt_extended import jwt_required
+from flask import Blueprint, jsonify
+from flask.globals import request
+from flask_jwt_extended import current_user, jwt_required
 from itsdangerous import json
 from marshmallow import fields
 from marshmallow.schema import Schema
 from werkzeug.exceptions import BadRequest
 
 from application.services.search_service import SearchService
-from flask_jwt_extended import current_user
-
-from application.services.validate_service import deserialize_body, deserialize_params
+from application.services.validate_service import (deserialize_body,
+                                                   deserialize_params)
 
 bp = Blueprint("search", __name__)
 

@@ -1,11 +1,12 @@
-from bs4 import BeautifulSoup
-import requests
-from csv import writer
 import csv
-import urllib
-import os.path
-import json
 import datetime
+import json
+import os.path
+import urllib
+from csv import writer
+
+import requests
+from bs4 import BeautifulSoup
 
 dailynews_links = {
     "Dawn": "https://www.dawn.com/feeds/home",

@@ -1,20 +1,21 @@
 import asyncio
-from datetime import datetime, timedelta
 import logging
-from unittest import result
-import httpx
-from typing import List, Optional, Tuple
 import urllib
+from datetime import datetime, timedelta
+from typing import List, Optional, Tuple
+from unittest import result
+
+import httpx
 import pytz
+import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-import requests
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.elements import and_
 from sqlalchemy.sql.expression import or_
-from application import models, db
-from werkzeug.exceptions import NotFound, BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 
+from application import db, models
 from application.models.schema import SearchLocation
 
 logger = logging.getLogger(__name__)

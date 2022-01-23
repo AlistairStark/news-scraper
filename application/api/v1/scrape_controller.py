@@ -1,18 +1,15 @@
-from flask.json import jsonify
-from flask_jwt_extended.view_decorators import jwt_required
 from dataclasses import dataclass
-from marshmallow import fields
-from flask import Blueprint
 
+from flask import Blueprint
+from flask.json import jsonify
+from flask_jwt_extended import current_user
+from flask_jwt_extended.view_decorators import jwt_required
+from marshmallow import fields
 from marshmallow.schema import Schema
 
-from application.services.search_service import SearchService
-
-from flask_jwt_extended import current_user
-
 from application.services.scraper_service import ScraperService
+from application.services.search_service import SearchService
 from application.services.validate_service import deserialize_params
-
 
 bp = Blueprint("scrape", __name__)
 

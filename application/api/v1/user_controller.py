@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from werkzeug.exceptions import Forbidden
-from flask import jsonify
+
+from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required
 from marshmallow import fields
 from marshmallow.schema import Schema
-from flask import Blueprint
+from werkzeug.exceptions import Forbidden
 
 from application.services.user_service import UserService
 from application.services.validate_service import deserialize_body

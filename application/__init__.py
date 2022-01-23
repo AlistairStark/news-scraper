@@ -1,10 +1,9 @@
+import logging
 import os
 
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-
-import logging
 
 db = SQLAlchemy()
 jwt = JWTManager()
@@ -26,10 +25,9 @@ def init_app():
     jwt.init_app(app)
 
     with app.app_context():
-        from application.managers.bcrypt import init_bcrypt
         from application import helpers
-
         from application.api.v1 import bp as v1_bp
+        from application.managers.bcrypt import init_bcrypt
 
         app.register_blueprint(v1_bp)
         init_bcrypt(app)

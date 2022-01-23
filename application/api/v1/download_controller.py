@@ -1,8 +1,8 @@
-from flask_jwt_extended.view_decorators import jwt_required
-from flask import Blueprint
 from dataclasses import dataclass
-from marshmallow import fields
 
+from flask import Blueprint
+from flask_jwt_extended.view_decorators import jwt_required
+from marshmallow import fields
 from marshmallow.schema import Schema
 
 from application.services.download_service import DownloadService
