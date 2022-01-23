@@ -51,7 +51,7 @@ class ScraperService(object):
                 f"Couldn't read {url}. \nIf the problem persists, remove this url from the search."
             )
 
-    def _chunks(self, main_list, chunk_size=2):
+    def _chunks(self, main_list, chunk_size=15):
         for i in range(0, len(main_list), chunk_size):
             yield main_list[i : i + chunk_size]
 
@@ -139,6 +139,8 @@ class ScraperService(object):
                 tasks = [self._get_page(session, l) for l in locations]
                 responses = await asyncio.gather(*tasks, return_exceptions=False)
                 for r in responses:
+                    if not r:
+                        continue
                     for data in r:
                         if data["link"] in links_set:
                             continue
