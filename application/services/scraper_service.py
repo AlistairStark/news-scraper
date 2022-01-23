@@ -52,7 +52,7 @@ class ScraperService(object):
                 f"Couldn't read {url}. \nIf the problem persists, remove this url from the search."
             )
 
-    def _chunks(self, main_list, chunk_size=15):
+    def _chunks(self, main_list, chunk_size=10):
         for i in range(0, len(main_list), chunk_size):
             yield main_list[i : i + chunk_size]
 
