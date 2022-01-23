@@ -1,10 +1,8 @@
 import asyncio
-from cmath import log
 import logging
 import urllib
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
-from unittest import result
 
 import httpx
 import pytz
@@ -52,16 +50,18 @@ class ScraperService(object):
                 f"Couldn't read {url}. \nIf the problem persists, remove this url from the search."
             )
 
-    def _chunks(self, main_list, chunk_size=5):
+    def _chunks(self, main_list, chunk_size=30):
         for i in range(0, len(main_list), chunk_size):
             yield main_list[i : i + chunk_size]
 
     async def _get_page(self, session, location: SearchLocation):
         try:
+            logger.info(f"STARTING SCRAPE: {location.url}")
             res = await session.get(location.url)
+            logger.info(f"ENDING SCRAPE: {location.url}")
             return [scrape for scrape in self._scrape(location.name, location.url, res)]
         except Exception as e:
-            logger.error(f"Error scraping page: {e}")
+            logger.error(f"Error scraping page {location.url}: {e}")
 
     def _scrape(self, site: str, link: str, res):
         parsed_url = urllib.parse.urlparse(link)
@@ -89,6 +89,8 @@ class ScraperService(object):
                 logger.error(f"Error while scraping: {e}")
 
     def _upsert_results(self, results: List[dict]):
+        if len(results) < 1:
+            return
         insert_results = insert(models.Result).values(results)
         upsert_results = insert_results.on_conflict_do_update(
             constraint="unique_link_search",
