@@ -170,7 +170,7 @@ class ScraperService(object):
                 models.Result.created_at >= start,
                 models.Result.created_at <= end,
             )
-        return q.all()
+        return q.order_by(models.Result.agency).all()
 
     async def scrape_sites(self, include_previous: bool) -> List[models.Result]:
         for locations in self._chunks(self.search.search_locations):
