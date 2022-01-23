@@ -131,6 +131,16 @@ class ScraperService(object):
         end = start + timedelta(days=1)
         return start, end
 
+    def _validate_result(self, result: dict) -> bool:
+        if (
+            result.get("agency")
+            and result.get("title")
+            and result.get("link")
+            and result.get("search_id")
+        ):
+            return True
+        return False
+
     async def scrape_sites(self, include_previous: bool) -> List[models.Result]:
         for locations in self._chunks(self.search.search_locations):
             links_set = set()
@@ -142,7 +152,7 @@ class ScraperService(object):
                     if not r:
                         continue
                     for data in r:
-                        if data["link"] in links_set:
+                        if not self._validate_result(data) or data["link"] in links_set:
                             continue
                         links_set.add(data["link"])
                         all_results.append(data)
