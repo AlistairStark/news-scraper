@@ -1,4 +1,5 @@
 import asyncio
+from cmath import log
 import logging
 import urllib
 from datetime import datetime, timedelta
@@ -154,6 +155,7 @@ class ScraperService(object):
                     for data in r:
                         if not self._validate_result(data) or data["link"] in links_set:
                             continue
+                        logger.info(f"ADDING SCRAPED DATA: {data}")
                         links_set.add(data["link"])
                         all_results.append(data)
                 self._upsert_results(all_results)
