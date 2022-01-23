@@ -114,32 +114,23 @@ class ScraperService(object):
                 if not title or not site:
                     logger.warn(f"error title: {title}, site: {site}")
                     continue
+                link_text = ""
                 if "http" in item.link.text:
-                    if item.link.text in link_set:
-                        continue
-                    link_set.add(item.link.text)
-                    yield (
-                        {
-                            "agency": site,
-                            "title": item.title.text.strip().split("\n")[0],
-                            "link": item.link.text,
-                            "search_id": self.search.id,
-                        }
-                    )
+                    link_text = item.link.text
                 else:
                     relative_path = item.link.text
-                    complete_url = f"{base_url}{relative_path}"
-                    if complete_url in link_set:
-                        continue
-                    link_set.add(complete_url)
-                    yield (
-                        {
-                            "agency": site,
-                            "title": item.title.text.strip().split("\n")[0],
-                            "link": complete_url,
-                            "search_id": self.search.id,
-                        }
-                    )
+                    link_text = f"{base_url}{relative_path}"
+                if link_text in link_set:
+                    continue
+                link_set.add(link_text)
+                yield (
+                    {
+                        "agency": site,
+                        "title": item.title.text.strip().split("\n")[0],
+                        "link": link_text,
+                        "search_id": self.search.id,
+                    }
+                )
             except Exception as e:
                 logger.warn(f"Error Found: {e}")
                 continue
@@ -200,6 +191,6 @@ class ScraperService(object):
                         logger.info(f"ADDING SCRAPED DATA: {data}")
                         links_set.add(data["link"])
                         all_results.append(data)
-                self._upsert_results(all_results)
+            self._upsert_results(all_results)
         start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)
