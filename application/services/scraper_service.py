@@ -173,9 +173,9 @@ class ScraperService(object):
         return q.order_by(models.Result.agency).all()
 
     async def scrape_sites(self, include_previous: bool) -> List[models.Result]:
+        all_results = []
+        links_set = set()
         for locations in self._chunks(self.search.search_locations):
-            links_set = set()
-            all_results = []
             async with httpx.AsyncClient() as session:
                 tasks = [self._get_page(session, l) for l in locations]
                 responses = await asyncio.gather(*tasks, return_exceptions=False)
@@ -189,6 +189,6 @@ class ScraperService(object):
                         logger.info(f"ADDING SCRAPED DATA: {data}")
                         links_set.add(data["link"])
                         all_results.append(data)
-            self._upsert_results(all_results)
+        self._upsert_results(all_results)
         start, end = self._get_today_start_end_time()
         return self.get_results(start, end, include_previous)
