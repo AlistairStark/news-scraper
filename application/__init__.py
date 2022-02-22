@@ -4,8 +4,9 @@ import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.pool import NullPool
 
-db = SQLAlchemy()
+db = SQLAlchemy(engine_options={"poolclass": NullPool})
 jwt = JWTManager()
 
 CONFIG = os.getenv("FLASK_CONFIG", "config.DevelopmentConfig")
