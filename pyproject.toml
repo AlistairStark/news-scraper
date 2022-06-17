@@ -1,26 +1,29 @@
 [tool.poetry]
 name = "daily-ops"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
 authors = ["Alistair Stark <astark@spiria.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-bs4 = "^0.0.1"
-Flask-JWT-Extended = "^4.3.1"
-Flask-SQLAlchemy = "^2.5.1"
+python = "^3.9"
+fastapi = "^0.70.1"
+uvicorn = {extras = ["standard"], version = "^0.16.0"}
+SQLAlchemy = "^1.4.29"
 alembic = "^1.7.5"
-gunicorn = "^20.1.0"
-gevent = "^21.12.0"
-marshmallow = "^3.14.1"
-requests = "^2.27.1"
-Flask-Bcrypt = "^0.7.1"
 psycopg2 = "^2.9.3"
+black = "^21.12b0"
+isort = "^5.10.1"
+pytest-asyncio = "^0.16.0"
+asyncio = "^3.4.3"
+asyncpg = "^0.25.0"
+httpx = "^0.21.3"
+cryptography = "^36.0.1"
+PyJWT = {extras = ["crypto"], version = "^2.3.0"}
+pytest-freezegun = "^0.4.2"
+bs4 = "^0.0.1"
 pytz = "^2021.3"
 lxml = "^4.7.1"
-Flask = {extras = ["async"], version = "^2.0.2"}
-httpx = "^0.21.3"
-isort = "^5.10.1"
+bcrypt = "^3.2.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.12b0", allow-prereleases = true}

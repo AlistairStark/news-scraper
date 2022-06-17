@@ -100,3 +100,4 @@ class SearchService(object):
     def delete_search_locations(self, user_id: int, search_id: str, ids: List[int]):
         self._check_user_owns_search(user_id, search_id)
         self._bulk_delete_by_id(ids, models.SearchLocation)
+
