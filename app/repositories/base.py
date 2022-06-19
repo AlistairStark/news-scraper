@@ -43,6 +43,3 @@ class DBRepository(Generic[ModelType]):
         async with self.session as session:
             await session.delete(db_model)
             await session.commit()
-
-
-

@@ -8,4 +8,4 @@ v1_router = APIRouter()
 
 v1_router.include_router(ping_router, tags=["ping"])
 v1_router.include_router(user_router, tags=["user"])
-v1_router.include_router(search_router, tags=['search'])
+v1_router.include_router(search_router, tags=["search"])

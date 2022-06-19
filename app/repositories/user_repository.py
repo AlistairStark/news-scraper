@@ -20,7 +20,6 @@ class UserRepository(DBRepository[User]):
             result: AsyncResult = await session.execute(select(User))
             return result.scalars().all()
 
-
     async def create_user(self, email: str, password: str):
         async with self.session as session:
             u = User(email=email, password=password)
@@ -29,5 +28,7 @@ class UserRepository(DBRepository[User]):
 
     async def get_by_email(self, email: str) -> Optional[User]:
         async with self.session as session:
-            result: AsyncResult = await session.execute(select(User).where(User.email == email))
+            result: AsyncResult = await session.execute(
+                select(User).where(User.email == email)
+            )
             return result.scalar_one_or_none()

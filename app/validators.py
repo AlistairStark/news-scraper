@@ -9,6 +9,7 @@ class UserSchema(BaseModel):
 class CreateUserSchema(UserSchema):
     create_secret: str
 
+
 class CreateSearchSchema(BaseModel):
     name: str
     description: str

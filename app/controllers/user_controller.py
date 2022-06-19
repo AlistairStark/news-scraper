@@ -1,5 +1,6 @@
 from http import HTTPStatus
 import logging
+from typing import Any
 from fastapi.exceptions import HTTPException
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 @router.post("/user/create")
 async def post_user_create(body: CreateUserSchema, db_session=Depends(get_db)):
     """Create a new user"""
@@ -22,13 +24,14 @@ async def post_user_create(body: CreateUserSchema, db_session=Depends(get_db)):
     await UserService(db_session).create_user(body)
     return "", 201
 
+
 @router.post("/user/login")
 async def login(body: UserSchema, db_session=Depends(get_db)):
     """Login and generate token"""
     return await UserService(db_session).login(email=body.email, password=body.password)
 
+
 @router.get("/user/test")
-async def test(user: User=Depends(auth_schema)):
+async def test(user: Any = Depends(auth_schema)):
     """Login and generate token"""
-    print('TOKEN HERE IS: ', user)
     return user.id

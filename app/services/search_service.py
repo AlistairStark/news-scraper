@@ -4,6 +4,7 @@ from app.models.schema import User
 from app.repositories.search_repository import SearchRepository
 from app.validators import CreateSearchSchema
 
+
 class SearchService:
     def __init__(self, db_session: AsyncSession):
         self.search_repository = SearchRepository(db_session)

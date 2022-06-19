@@ -12,9 +12,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-
-@router.post("/search")
-async def post_search(data: CreateSearchSchema, user: User =Depends(auth_schema), db_session=Depends(get_db)):
+@router.post("/search", status_code=HTTPStatus.CREATED)
+async def post_search(
+    data: CreateSearchSchema,
+    user: User = Depends(auth_schema),
+    db_session=Depends(get_db),
+):
     """Create a search"""
     await SearchService(db_session).create_search(user, data)
-    return "", HTTPStatus.CREATED

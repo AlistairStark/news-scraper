@@ -3,4 +3,5 @@ from app.repositories.base import DBRepository
 
 
 class SearchRepository(DBRepository[Search]):
+    Model = Search
     pass
