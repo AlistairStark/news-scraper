@@ -23,8 +23,8 @@ class DBRepository(Generic[ModelType]):
             r = await session.get(self.Model, pk)
             return r
 
-    async def update(self, db_model: ModelType, params: dict) -> ModelType:
-        for k, v in params.items():
+    async def update(self, db_model: ModelType, **data) -> ModelType:
+        for k, v in data.items():
             setattr(db_model, k, v)
         async with self.session as session:
             session.add(db_model)
