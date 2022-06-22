@@ -2,7 +2,7 @@
 import pytest
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from app.models.schema import Search
+from app.models.schema import Search, SearchTerm
 
 # from app.models.flow import Flow, FlowDocument
 # from app.models.shop import Shop
@@ -30,27 +30,24 @@ async def search(db_session, user_fixture):
     return s
 
 
-# @pytest.fixture
-# async def flow(db_session, shop):
-#     f = await flow_factory(
-#         db_session,
-#         document={},
-#         shop_id=shop.id,
-#         name="fake flow",
-#         short_code="fake code",
-#         description="this is a fake description",
-#     )
-#     return f
+async def search_term_factory(db_session, search, term):
+    session: AsyncSession
+    async with db_session as session:
+        s = SearchTerm(search_id=search.id, term=term)
+        session.add(s)
+        await session.commit()
+        return s
 
 
-# @pytest.fixture
-# async def template(db_session, shop):
-#     s = await template_factory(
-#         db_session,
-#         shop_id=shop.id,
-#         name="test template",
-#         description="stuff",
-#         markup="<h1>TEST</h1>",
-#         block_markup={"test": {"test1": 1}},
-#     )
-#     return s
+@pytest.fixture
+async def search_terms(db_session, search):
+    terms = ["term 1", "term 2", "term 3"]
+    terms_obj = []
+    for term in terms:
+        s = await search_term_factory(
+            db_session,
+            search,
+            term,
+        )
+        terms_obj.append(s)
+    return terms_obj

@@ -36,6 +36,8 @@ async def test_get_search(
         description=search.description,
         user_id=search.user_id,
         is_rss=search.is_rss,
+        search_locations=[],
+        search_terms=[],
     )
     data = dict(search_id=search.id)
     r = await client.get("/v1/search", params=data)

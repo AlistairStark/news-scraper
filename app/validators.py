@@ -43,3 +43,17 @@ class SearchTermsSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SearchLocationsSchema(BaseModel):
+    id: int
+    name: str
+    url: str
+
+    class Config:
+        orm_mode = True
+
+
+class SearchWithTermsLocations(SearchSchema):
+    search_terms: List[SearchTermsSchema]
+    search_locations: List[SearchLocationsSchema]

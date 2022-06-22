@@ -1,5 +1,6 @@
+from asyncio.log import logger
 from http import HTTPStatus
-from typing import Sequence
+from typing import List, Sequence
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.models.schema import Search, SearchTerm, User
@@ -24,8 +25,17 @@ class SearchService:
             user_id=user.id,
         )
 
-    async def get_by_id(self, user: User, search_id: str) -> Search:
-        search = await self.search_repository.get_by_id(search_id)
+    async def get_by_id(
+        self,
+        user: User,
+        search_id: str,
+        include_relations=False,
+    ) -> Search:
+
+        search = await self.search_repository.get_by_id(
+            search_id,
+            include_relations=include_relations,
+        )
         if not search or search.user_id != user.id:
             raise HTTPException(HTTPStatus.NOT_FOUND, "Search not found")
         return search
@@ -51,3 +61,12 @@ class SearchService:
             search.id,
             data.terms,
         )
+
+    async def delete_search_terms(self, user: User, term_ids_str: str, search_id: int):
+        term_ids: List[int]
+        try:
+            term_ids = [int(id) for id in term_ids_str.split(",")]
+        except Exception:
+            raise HTTPException(HTTPStatus.BAD_REQUEST, "invalid term IDs")
+        await self.get_by_id(user, search_id)
+        await self.search_terms_repository.delete_multiple(search_id, term_ids)

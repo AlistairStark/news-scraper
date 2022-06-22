@@ -6,7 +6,12 @@ from app.dependencies.db import get_db
 from app.dependencies.auth import auth_schema
 from app.models.schema import User
 from app.services.search_service import SearchService
-from app.validators import CreateSearchSchema, SearchSchema, UpdateSearchSchema
+from app.validators import (
+    CreateSearchSchema,
+    SearchSchema,
+    SearchWithTermsLocations,
+    UpdateSearchSchema,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +28,20 @@ async def post_search(
     await SearchService(db_session).create_search(user, data)
 
 
-@router.get("/search", status_code=HTTPStatus.OK, response_model=SearchSchema)
+@router.get(
+    "/search", status_code=HTTPStatus.OK, response_model=SearchWithTermsLocations
+)
 async def get_search(
     search_id: int,
     user: User = Depends(auth_schema),
     db_session=Depends(get_db),
 ):
     """Get a search by ID"""
-    return await SearchService(db_session).get_by_id(user, search_id)
+    return await SearchService(db_session).get_by_id(
+        user,
+        search_id,
+        include_relations=True,
+    )
 
 
 @router.delete("/search", status_code=HTTPStatus.NO_CONTENT)
