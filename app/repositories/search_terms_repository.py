@@ -1,10 +1,9 @@
 from typing import Sequence
 
-from sqlalchemy import delete, select
-from app.models.schema import Search, SearchTerm
+from sqlalchemy import delete
+from app.models.schema import SearchTerm
 from app.repositories.base import DBRepository
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio.result import AsyncResult
 
 
 class SearchTermRepository(DBRepository[SearchTerm]):

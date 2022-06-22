@@ -3,11 +3,13 @@ from http import HTTPStatus
 from typing import List, Sequence
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from app.models.schema import Search, SearchTerm, User
+from app.models.schema import Search, SearchLocation, SearchTerm, User
+from app.repositories.search_location_repository import SearchLocationRepository
 
 from app.repositories.search_repository import SearchRepository
 from app.repositories.search_terms_repository import SearchTermRepository
 from app.validators import (
+    CreateSearchLocationsSchema,
     CreateSearchSchema,
     CreateSearchTermsSchema,
     UpdateSearchSchema,
@@ -18,6 +20,7 @@ class SearchService:
     def __init__(self, db_session: AsyncSession):
         self.search_repository = SearchRepository(db_session)
         self.search_terms_repository = SearchTermRepository(db_session)
+        self.search_location_repository = SearchLocationRepository(db_session)
 
     async def create_search(self, user: User, data: CreateSearchSchema):
         await self.search_repository.create(
@@ -70,3 +73,12 @@ class SearchService:
             raise HTTPException(HTTPStatus.BAD_REQUEST, "invalid term IDs")
         await self.get_by_id(user, search_id)
         await self.search_terms_repository.delete_multiple(search_id, term_ids)
+
+    async def create_search_locations(
+        self, user: User, data: CreateSearchLocationsSchema
+    ) -> Sequence[SearchLocation]:
+        await self.get_by_id(user, data.search_id)
+        return await self.search_location_repository.create_search_locations(
+            data.search_id,
+            data.locations,
+        )

@@ -26,6 +26,16 @@ class CreateSearchTermsSchema(BaseModel):
     search_id: int
 
 
+class LocationSchema(BaseModel):
+    name: str
+    url: str
+
+
+class CreateSearchLocationsSchema(BaseModel):
+    locations: List[LocationSchema]
+    search_id: int
+
+
 class SearchSchema(BaseModel):
     id: int
     name: str
