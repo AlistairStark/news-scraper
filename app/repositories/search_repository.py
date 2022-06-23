@@ -1,11 +1,12 @@
 from typing import Optional, Sequence
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio.result import AsyncResult
+from sqlalchemy.ext.asyncio.session import AsyncSession
+from sqlalchemy.orm import joinedload
+
 from app.models.schema import Search
 from app.repositories.base import DBRepository
-from sqlalchemy.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio.result import AsyncResult
-from sqlalchemy.orm import joinedload
 
 
 class SearchRepository(DBRepository[Search]):

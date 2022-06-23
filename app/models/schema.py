@@ -7,8 +7,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.schema import ForeignKey, UniqueConstraint
 from sqlalchemy.sql.sqltypes import Boolean
+
 from app.models.base import Base
-from app.models.helpers import CreatedAtUpdatedAtMixin
 from app.models.helpers import CreatedAtUpdatedAtMixin
 
 

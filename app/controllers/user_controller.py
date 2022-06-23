@@ -1,15 +1,17 @@
-from http import HTTPStatus
 import logging
+from http import HTTPStatus
 from typing import Any
-from fastapi.exceptions import HTTPException
+
 from fastapi import APIRouter, Depends
+from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPBearer
-from app.dependencies.db import get_db
+
+from app import settings
 from app.dependencies.auth import auth_schema
+from app.dependencies.db import get_db
 from app.models.schema import User
 from app.services.user_service import UserService
 from app.validators import CreateUserSchema, UserSchema
-from app import settings
 
 logger = logging.getLogger(__name__)
 

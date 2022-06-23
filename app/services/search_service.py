@@ -1,19 +1,16 @@
-from asyncio.log import logger
 from http import HTTPStatus
 from typing import List, Sequence
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from app.models.schema import Search, SearchLocation, SearchTerm, User
-from app.repositories.search_location_repository import SearchLocationRepository
 
+from app.models.schema import Search, SearchLocation, SearchTerm, User
+from app.repositories.search_location_repository import \
+    SearchLocationRepository
 from app.repositories.search_repository import SearchRepository
 from app.repositories.search_terms_repository import SearchTermRepository
-from app.validators import (
-    CreateSearchLocationsSchema,
-    CreateSearchSchema,
-    CreateSearchTermsSchema,
-    UpdateSearchSchema,
-)
+from app.validators import (CreateSearchLocationsSchema, CreateSearchSchema,
+                            CreateSearchTermsSchema, UpdateSearchSchema)
 
 
 class SearchService:
@@ -21,6 +18,13 @@ class SearchService:
         self.search_repository = SearchRepository(db_session)
         self.search_terms_repository = SearchTermRepository(db_session)
         self.search_location_repository = SearchLocationRepository(db_session)
+
+    def _split_ids(self, ids: str) -> List[int]:
+        """Split a string of ids separated by ,"""
+        try:
+            return [int(id) for id in ids.split(",")]
+        except Exception:
+            raise HTTPException(HTTPStatus.BAD_REQUEST, "invalid term IDs")
 
     async def create_search(self, user: User, data: CreateSearchSchema):
         await self.search_repository.create(
@@ -66,11 +70,7 @@ class SearchService:
         )
 
     async def delete_search_terms(self, user: User, term_ids_str: str, search_id: int):
-        term_ids: List[int]
-        try:
-            term_ids = [int(id) for id in term_ids_str.split(",")]
-        except Exception:
-            raise HTTPException(HTTPStatus.BAD_REQUEST, "invalid term IDs")
+        term_ids = self._split_ids(term_ids_str)
         await self.get_by_id(user, search_id)
         await self.search_terms_repository.delete_multiple(search_id, term_ids)
 
@@ -82,3 +82,13 @@ class SearchService:
             data.search_id,
             data.locations,
         )
+
+    async def delete_search_locations(
+        self,
+        user: User,
+        term_ids_str: str,
+        search_id: int,
+    ):
+        term_ids = self._split_ids(term_ids_str)
+        await self.get_by_id(user, search_id)
+        await self.search_location_repository.delete_multiple(search_id, term_ids)

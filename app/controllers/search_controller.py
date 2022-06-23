@@ -1,17 +1,15 @@
-from http import HTTPStatus
 import logging
+from http import HTTPStatus
 from typing import Sequence
+
 from fastapi import APIRouter, Depends
-from app.dependencies.db import get_db
+
 from app.dependencies.auth import auth_schema
+from app.dependencies.db import get_db
 from app.models.schema import User
 from app.services.search_service import SearchService
-from app.validators import (
-    CreateSearchSchema,
-    SearchSchema,
-    SearchWithTermsLocations,
-    UpdateSearchSchema,
-)
+from app.validators import (CreateSearchSchema, SearchSchema,
+                            SearchWithTermsLocations, UpdateSearchSchema)
 
 logger = logging.getLogger(__name__)
 

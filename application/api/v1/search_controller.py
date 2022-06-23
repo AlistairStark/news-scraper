@@ -11,7 +11,8 @@ from marshmallow.schema import Schema
 from werkzeug.exceptions import BadRequest
 
 from application.services.search_service import SearchService
-from application.services.validate_service import deserialize_body, deserialize_params
+from application.services.validate_service import (deserialize_body,
+                                                   deserialize_params)
 
 bp = Blueprint("search", __name__)
 

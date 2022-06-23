@@ -1,9 +1,10 @@
 from typing import Sequence
 
-from app.models.schema import SearchLocation, SearchTerm
-from app.repositories.base import DBRepository
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
+from app.models.schema import SearchLocation, SearchTerm
+from app.repositories.base import DBRepository
 from app.validators import LocationSchema
 
 
@@ -28,3 +29,13 @@ class SearchLocationRepository(DBRepository[SearchLocation]):
             session.add_all(locations)
             await session.commit()
             return locations
+
+    async def delete_multiple(self, search_id: int, term_ids: Sequence[int]):
+        session: AsyncSession
+        async with self.session as session:
+            stmt = delete(SearchLocation).where(
+                SearchLocation.id.in_(term_ids),
+                SearchLocation.search_id == search_id,
+            )
+            await session.execute(stmt)
+            await session.commit()

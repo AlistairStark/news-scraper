@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
 from app.controllers.ping import router as ping_router
-from app.controllers.user_controller import router as user_router
 from app.controllers.search_controller import router as search_router
-from app.controllers.search_terms_controller import router as search_terms_router
-from app.controllers.search_locations_controller import (
-    router as search_locations_router,
-)
+from app.controllers.search_locations_controller import \
+    router as search_locations_router
+from app.controllers.search_terms_controller import \
+    router as search_terms_router
+from app.controllers.user_controller import router as user_router
 
 v1_router = APIRouter()
 

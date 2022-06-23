@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from typing import List
-from pyparsing import Optional
 
+from pyparsing import Optional
 from sqlalchemy.ext.asyncio.result import AsyncResult
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select

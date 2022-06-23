@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 from http import HTTPStatus
 from typing import Optional
+
 from fastapi import HTTPException, Request
 from fastapi.security import HTTPBearer
+
 from app.models.schema import User
 from app.repositories.user_repository import UserRepository
 from app.services.token_service import TokenService

@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 from http import HTTPStatus
+
 import bcrypt
 from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.schema import User
+from app.repositories.user_repository import UserRepository
 from app.services.token_service import TokenService
 from app.validators import CreateUserSchema
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.repositories.user_repository import UserRepository
 
 
 class UserService(object):
