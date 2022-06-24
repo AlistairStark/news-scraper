@@ -1,3 +1,3 @@
 cd app && alembic upgrade head && cd ..
 
-uvicorn app:app --host 0.0.0.0 --port 5000
+gunicorn --bind=0.0.0.0:5000 -k uvicorn.workers.UvicornWorker app:app

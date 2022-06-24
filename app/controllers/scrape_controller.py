@@ -7,13 +7,14 @@ from app.dependencies.db import get_db
 from app.models.schema import User
 from app.services.scraper_service import ScraperService
 from app.services.search_service import SearchService
+from app.validators import ResultsListSchema
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-@router.get("/scrape")
+@router.get("/scrape", response_model=ResultsListSchema)
 async def get_scrape_data(
     search_id: int,
     include_previous: bool,
