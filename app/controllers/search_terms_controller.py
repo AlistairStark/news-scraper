@@ -1,6 +1,6 @@
 import logging
 from http import HTTPStatus
-from typing import List, Sequence
+from typing import Sequence
 
 from fastapi import APIRouter, Depends
 
@@ -36,5 +36,5 @@ async def delete_search_terms(
     user: User = Depends(auth_schema),
     db_session=Depends(get_db),
 ):
-    """Create search terms for a search"""
+    """Delete search terms for a search"""
     return await SearchService(db_session).delete_search_terms(user, ids, search_id)

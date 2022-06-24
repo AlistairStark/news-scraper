@@ -20,7 +20,7 @@ router = APIRouter()
     status_code=HTTPStatus.CREATED,
     response_model=Sequence[SearchLocationsSchema],
 )
-async def post_search_terms(
+async def post_search_locations(
     data: CreateSearchLocationsSchema,
     user: User = Depends(auth_schema),
     db_session=Depends(get_db),
@@ -36,5 +36,5 @@ async def delete_search_locations(
     user: User = Depends(auth_schema),
     db_session=Depends(get_db),
 ):
-    """Create search locations for a search"""
+    """Delete search locations for a search"""
     return await SearchService(db_session).delete_search_locations(user, ids, search_id)

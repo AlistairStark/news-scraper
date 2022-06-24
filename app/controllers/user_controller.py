@@ -4,12 +4,10 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
-from fastapi.security import HTTPBearer
 
 from app import settings
 from app.dependencies.auth import auth_schema
 from app.dependencies.db import get_db
-from app.models.schema import User
 from app.services.user_service import UserService
 from app.validators import CreateUserSchema, UserSchema
 
@@ -35,5 +33,5 @@ async def login(body: UserSchema, db_session=Depends(get_db)):
 
 @router.get("/user/test")
 async def test(user: Any = Depends(auth_schema)):
-    """Login and generate token"""
+    """Test a user has access"""
     return user.id

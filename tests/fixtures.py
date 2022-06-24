@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from app.models.schema import Search, SearchLocation, SearchTerm
+from app.models.schema import Result, Search, SearchLocation, SearchTerm
 
 
 async def search_factory(db_session, **search_kwargs):
@@ -74,3 +74,52 @@ async def search_locations(db_session, search):
         )
         location_obj.append(s)
     return location_obj
+
+
+async def result_factory(db_session, search, agency, title, link):
+    session: AsyncSession
+    async with db_session as session:
+        r = Result(
+            search_id=search.id,
+            agency=agency,
+            title=title,
+            link=link,
+        )
+        session.add(r)
+        await session.commit()
+        return r
+
+
+@pytest.fixture
+async def results(db_session, search):
+    results = [
+        {
+            "agency": "site1",
+            "title": "title1",
+            "link": "link_text1",
+            "search_id": search.id,
+        },
+        {
+            "agency": "site2",
+            "title": "title2",
+            "link": "link_text2",
+            "search_id": search.id,
+        },
+        {
+            "agency": "site3",
+            "title": "title3",
+            "link": "link_text3",
+            "search_id": search.id,
+        },
+    ]
+    result_obj = []
+    for result in results:
+        r = await result_factory(
+            db_session,
+            search,
+            result["agency"],
+            result["title"],
+            result["link"],
+        )
+        result_obj.append(r)
+    return result_obj

@@ -58,7 +58,7 @@ async def update_search(
     user: User = Depends(auth_schema),
     db_session=Depends(get_db),
 ):
-    """Delete a search by ID"""
+    """Update a search by ID"""
     return await SearchService(db_session).update_search(user, data)
 
 
@@ -71,5 +71,5 @@ async def get_search(
     user: User = Depends(auth_schema),
     db_session=Depends(get_db),
 ):
-    """Get a search by ID"""
+    """Get all searches for a user"""
     return await SearchService(db_session).get_searches_by_user(user)
