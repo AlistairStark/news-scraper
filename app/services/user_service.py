@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+from typing import Dict
 
 import bcrypt
 from fastapi import HTTPException
@@ -38,8 +39,9 @@ class UserService(object):
         password = self._hash_password(body.password)
         await self.user_repository.create_user(body.email, password)
 
-    async def login(self, email: str, password: str) -> str:
+    async def login(self, email: str, password: str) -> Dict:
         user = await self._get_user_by_email(email)
         if not self._check_password(user, password):
             raise HTTPException(HTTPStatus.FORBIDDEN, f"Email or password is incorrect")
-        return self.token_service.create_token(identity=user.email)
+        token = self.token_service.create_token(identity=user.email)
+        return dict(token=token)

@@ -1,13 +1,3 @@
+cd app && alembic upgrade head && cd ..
 
-gunicorn \
-    --user nobody \
-    --group nogroup \
-    --workers 4 \
-    --max-requests 250 \
-    --max-requests-jitter 50 \
-    --timeout 600 \
-    --bind 0.0.0.0:5000 \
-    --limit-request-field_size 100000000 \
-    --log-level=INFO \
-    --worker-class gevent \
-    wsgi:app
+uvicorn app:app --host 0.0.0.0 --port 5000

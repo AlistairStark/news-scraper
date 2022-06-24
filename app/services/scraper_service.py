@@ -8,16 +8,15 @@ import httpx
 import pytz
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from app.models.schema import Result, Search, SearchLocation
 
 from app.repositories.result_repository import ResultRepository
-from application import models
-from application.models.schema import SearchLocation
 
 logger = logging.getLogger(__name__)
 
 
 class ScraperService:
-    def __init__(self, db_session, search: models.Search):
+    def __init__(self, db_session, search: Search):
         self.result_repository = ResultRepository(db_session)
         self.search = search
         self.terms = [t.term.lower() for t in search.search_terms]
@@ -94,7 +93,7 @@ class ScraperService:
             except Exception as e:
                 logger.error(f"Error while scraping: {e}")
 
-    def _scrape_feed(self, site: str, link: str, res) -> List[models.Result]:
+    def _scrape_feed(self, site: str, link: str, res) -> List[Result]:
         soup = BeautifulSoup(res.content, features="xml")
         parsed_url = urllib.parse.urlparse(link)
         base_url = f"{parsed_url[0]}://{parsed_url[1]}"
@@ -132,13 +131,15 @@ class ScraperService:
                 logger.warn(f"Error Found: {e}")
                 continue
 
-    async def scrape_sites(self, include_previous: bool) -> List[models.Result]:
+    async def scrape_sites(self, include_previous: bool) -> List[Result]:
         all_results = []
         links_set = set()
         for locations in self._chunks(self.search.search_locations):
             async with httpx.AsyncClient() as session:
-                tasks = [self._get_page(session, l) for l in locations]
-                responses = await asyncio.gather(*tasks, return_exceptions=False)
+                responses = await asyncio.gather(
+                    *[self._get_page(session, l) for l in locations],
+                    return_exceptions=False,
+                )
                 for r in responses:
                     if not r:
                         continue
@@ -151,7 +152,7 @@ class ScraperService:
                         all_results.append(data)
         await self.result_repository.upsert_results(all_results)
         start, end = self._get_today_start_end_time()
-        return self.result_repository.get_results(
+        return await self.result_repository.get_results(
             self.search.id,
             start,
             end,

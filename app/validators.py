@@ -68,3 +68,21 @@ class SearchLocationsSchema(BaseModel):
 class SearchWithTermsLocations(SearchSchema):
     search_terms: List[SearchTermsSchema]
     search_locations: List[SearchLocationsSchema]
+
+
+class ResultsSchema(BaseModel):
+    id: int
+    agency: str
+    deleted: bool
+    link: str
+    title: str
+    search_id: int
+    created_at: str
+    updated_at: str
+
+    class Config:
+        orm_mode = True
+
+
+class ResultsListSchema(BaseModel):
+    links: List[ResultsSchema]

@@ -26,4 +26,5 @@ async def get_scrape_data(
         search_id,
         include_relations=True,
     )
-    return await ScraperService(db_session, search).scrape_sites(include_previous)
+    r = await ScraperService(db_session, search).scrape_sites(include_previous)
+    return {"links": r}
