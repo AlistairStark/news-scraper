@@ -5,15 +5,12 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from app.models.schema import Search, SearchLocation, SearchTerm, User
-from app.repositories.search_location_repository import SearchLocationRepository
+from app.repositories.search_location_repository import \
+    SearchLocationRepository
 from app.repositories.search_repository import SearchRepository
 from app.repositories.search_terms_repository import SearchTermRepository
-from app.validators import (
-    CreateSearchLocationsSchema,
-    CreateSearchSchema,
-    CreateSearchTermsSchema,
-    UpdateSearchSchema,
-)
+from app.validators import (CreateSearchLocationsSchema, CreateSearchSchema,
+                            CreateSearchTermsSchema, UpdateSearchSchema)
 
 
 class SearchService:

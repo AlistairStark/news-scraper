@@ -15,12 +15,12 @@ services:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_DBS: "${POSTGRES_DBS}"
-    command: ["/bin/bash"]
+    command: [ "bash", "run.sh" ]
     stdin_open: true
     tty: true
 
   postgres:
-    image: "postgres"
+    image: "bitnami/postgresql:14.5.0-debian-11-r42"
     ports:
       - "5432:5432"
     volumes:

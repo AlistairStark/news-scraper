@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from app.models.schema import Result
 
+from app.models.schema import Result
 from app.repositories.result_repository import ResultRepository
 
 

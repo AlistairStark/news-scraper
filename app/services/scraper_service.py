@@ -8,8 +8,8 @@ import httpx
 import pytz
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from app.models.schema import Result, Search, SearchLocation
 
+from app.models.schema import Result, Search, SearchLocation
 from app.repositories.result_repository import ResultRepository
 
 logger = logging.getLogger(__name__)
