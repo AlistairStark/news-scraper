@@ -9,10 +9,10 @@ class Config(object):
     REDIS_URL = os.environ.get("CELERY_BROKER_URL")
     DEBUG = False
     TESTING = False
-    SECRET_KEY = os.environ.get("SECRET_KEY", "1234")
-    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "2345")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
-    CREATE_SECRET = os.environ.get("CREATE_SECRET", "test")
+    CREATE_SECRET = os.environ.get("CREATE_SECRET", "")
 
 
 class DevelopmentConfig(Config):
